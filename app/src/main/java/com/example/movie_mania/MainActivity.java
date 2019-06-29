@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Menu;
 import android.widget.Toast;
 
 import java.util.List;
@@ -38,8 +39,12 @@ public class MainActivity extends AppCompatActivity {
         setupOnScrollListener();
         getGenres();
 
+    }
 
-
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        getMenuInflater().inflate(R.menu.menu_movies, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 
     private void setupOnScrollListener(){
