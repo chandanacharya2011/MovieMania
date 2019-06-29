@@ -16,7 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewHolder> {
-    private String IMAGE_BASE_URL = "http://image.tmdb.org/t/p/w500";
+    // Use https instead on http
+    private String IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500";
 
     private List<Movie> movies;
     private List<Genre> allGenres;
