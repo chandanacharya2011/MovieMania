@@ -7,6 +7,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import java.util.List;
@@ -47,6 +49,25 @@ public class MainActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch (item.getItemId()){
+            case R.id.sort:
+                showSortMenu();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+
+    private void showSortMenu(){
+        PopupMenu sortMenu = new PopupMenu(this, findViewById(R.id.sort));
+        sortMenu.inflate(R.menu.menu_movies_sort);
+        sortMenu.show();
+    }
+
+
     private void setupOnScrollListener(){
         final LinearLayoutManager manager = new LinearLayoutManager(this);
         moviesList.setLayoutManager(manager);
@@ -66,6 +87,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+
     private void getGenres() {
         moviesRepository.getGenres(new OnGetGenresCallback() {
             @Override

@@ -50,8 +50,6 @@ public class MoviesRepository {
                      moviesResponse = response.body();
                     if(moviesResponse != null && moviesResponse.getMovies() != null){
                         onGetMoviesCallback.onSuccess(moviesResponse.getPage(), moviesResponse.getMovies());
-
-
                     }
 
                 }else{
