@@ -4,6 +4,7 @@ package com.example.movie_mania;
 //Create a Retrofit instance, here we call our endpoint and retrive the list of movies.
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -37,9 +38,10 @@ public class MoviesRepository {
 
     }
 
-    public void getMovies(final OnGetMoviesCallback onGetMoviesCallback){
+    public void getMovies(int page, final OnGetMoviesCallback onGetMoviesCallback){
 
-        api.getPopularMovies(BuildConfig.TMDB_API_KEY, LANGUAGE, 1).enqueue(new Callback<MoviesResponse>() {
+        Log.d("Movies Repository", "Next Page =" +page);
+        api.getPopularMovies(BuildConfig.TMDB_API_KEY, LANGUAGE, page).enqueue(new Callback<MoviesResponse>() {
 
             @Override
             public void onResponse(@NonNull Call<MoviesResponse> call, @NonNull Response<MoviesResponse> response) {
@@ -47,7 +49,7 @@ public class MoviesRepository {
                 if(response.isSuccessful()){
                      moviesResponse = response.body();
                     if(moviesResponse != null && moviesResponse.getMovies() != null){
-                        onGetMoviesCallback.onSuccess(moviesResponse.getMovies());
+                        onGetMoviesCallback.onSuccess(moviesResponse.getPage(), moviesResponse.getMovies());
 
 
                     }
