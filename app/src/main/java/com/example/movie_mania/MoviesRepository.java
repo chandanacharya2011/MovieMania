@@ -17,8 +17,12 @@ public class MoviesRepository {
     private static final String BASE_URL = "https://api.themoviedb.org/3/";
     private static final String LANGUAGE = "en-US";
 
+    public static final String POPULAR = "popular";
+    public static final String TOP_RATED = "top_rated";
+    public static final String UPCOMING = "upcoming";
+
     private static MoviesRepository repository;
-    private static MoviesResponse moviesResponse;
+    //private static MoviesResponse moviesResponse;
 
     private TMDbApi api;
 
@@ -38,16 +42,14 @@ public class MoviesRepository {
 
     }
 
-    public void getMovies(int page, final OnGetMoviesCallback onGetMoviesCallback){
-
-        Log.d("Movies Repository", "Next Page =" +page);
-        api.getPopularMovies(BuildConfig.TMDB_API_KEY, LANGUAGE, page).enqueue(new Callback<MoviesResponse>() {
+    public void getMovies(int page, String sortBy, final OnGetMoviesCallback onGetMoviesCallback){
+        Callback<MoviesResponse> call = new Callback<MoviesResponse>() {
 
             @Override
             public void onResponse(@NonNull Call<MoviesResponse> call, @NonNull Response<MoviesResponse> response) {
 
                 if(response.isSuccessful()){
-                     moviesResponse = response.body();
+                     MoviesResponse moviesResponse = response.body();
                     if(moviesResponse != null && moviesResponse.getMovies() != null){
                         onGetMoviesCallback.onSuccess(moviesResponse.getPage(), moviesResponse.getMovies());
                     }
@@ -61,7 +63,23 @@ public class MoviesRepository {
             public void onFailure(Call<MoviesResponse> call, Throwable t) {
                 onGetMoviesCallback.onError();
             }
-        });
+        };
+
+        switch (sortBy) {
+            case TOP_RATED:
+                api.getTopRatedMovies(BuildConfig.TMDB_API_KEY, LANGUAGE, page)
+                        .enqueue(call);
+                break;
+            case UPCOMING:
+                api.getUpcomingMovies(BuildConfig.TMDB_API_KEY, LANGUAGE, page)
+                        .enqueue(call);
+                break;
+            case POPULAR:
+            default:
+                api.getPopularMovies(BuildConfig.TMDB_API_KEY, LANGUAGE, page)
+                        .enqueue(call);
+                break;
+        }
 
 
     }
