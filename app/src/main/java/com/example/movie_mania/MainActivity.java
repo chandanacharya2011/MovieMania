@@ -1,5 +1,6 @@
 package com.example.movie_mania;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -145,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("MoviesRepository", "Current Page = " + page);
 
              if(adapter == null){
-                 adapter = new MoviesAdapter(movies, movieGenres);
+                 adapter = new MoviesAdapter(movies, movieGenres, callback);
                  moviesList.setAdapter(adapter);
              }else{
                  if (page == 1) {
@@ -166,6 +167,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    OnMoviesClickCallback callback = new OnMoviesClickCallback() {
+        @Override
+        public void onClick(Movie movie) {
+            Intent intent = new Intent(MainActivity.this, MovieActivity.class);
+            intent.putExtra(MovieActivity.MOVIE_ID, movie.getId());
+            startActivity(intent);
+        }
+    };
 
     private void setTitle() {
         switch (sortBy) {

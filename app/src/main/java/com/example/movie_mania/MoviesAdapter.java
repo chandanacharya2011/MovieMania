@@ -21,8 +21,10 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
 
     private List<Movie> movies;
     private List<Genre> allGenres;
+    private OnMoviesClickCallback callback;
 
-    public MoviesAdapter(List<Movie> movies, List<Genre> allGenres){
+    public MoviesAdapter(List<Movie> movies, List<Genre> allGenres, OnMoviesClickCallback callback){
+        this.callback = callback;
         this.movies = movies;
         this.allGenres = allGenres;
     }
@@ -60,6 +62,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
         TextView rating;
         TextView genres;
         ImageView poster;
+        Movie movie;
 
         public MovieViewHolder(View itemView) {
             super(itemView);
@@ -69,6 +72,12 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
             rating = itemView.findViewById(R.id.item_movie_rating);
             genres = itemView.findViewById(R.id.item_movie_genre);
             poster = itemView.findViewById(R.id.item_movie_poster);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    callback.onClick(movie);
+                }
+            });
 
         }
         public void bind(Movie movie){
@@ -80,6 +89,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
                     .load(IMAGE_BASE_URL + movie.getPosterPath())
                     .apply(RequestOptions.placeholderOf(R.color.colorPrimary))
                     .into(poster);
+            this.movie = movie;
         }
 
         private String getGenres(List<Integer> genreIds) {
