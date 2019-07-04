@@ -1,5 +1,7 @@
 package com.example.movie_mania;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -22,8 +24,8 @@ public class MovieActivity extends AppCompatActivity {
     public static String MOVIE_ID = "movie_id";
 
     private static String IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w780";
-    private static String YOUTUBE_VIDEO_URL = "http://www.youtube.com/watch?v=%s";
-    private static String YOUTUBE_THUMBNAIL_URL = "http://img.youtube.com/vi/%s/0.jpg";
+    private static String YOUTUBE_VIDEO_URL = "https://www.youtube.com/watch?v=%s";
+    private static String YOUTUBE_THUMBNAIL_URL = "https://img.youtube.com/vi/%s/0.jpg";
 
     private ImageView movieBackdrop;
     private TextView movieTitle;
@@ -34,6 +36,8 @@ public class MovieActivity extends AppCompatActivity {
     private RatingBar movieRating;
     private LinearLayout movieTrailers;
     private LinearLayout movieReviews;
+
+    private TextView trailersLabel;
 
     private MoviesRepository moviesRepository;
     private int movieId;
@@ -74,6 +78,7 @@ public class MovieActivity extends AppCompatActivity {
         movieRating = findViewById(R.id.movieDetailsRating);
         movieTrailers = findViewById(R.id.movieTrailers);
         movieReviews = findViewById(R.id.movieReviews);
+        trailersLabel = findViewById(R.id.trailersLabel);
     }
 
     private void getMovie() {
@@ -93,6 +98,7 @@ public class MovieActivity extends AppCompatActivity {
                             .apply(RequestOptions.placeholderOf(R.color.colorPrimary))
                             .into(movieBackdrop);
                 }
+                getTrailers(movie);
             }
 
             @Override
@@ -100,6 +106,43 @@ public class MovieActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    private void getTrailers(Movie movie) {
+        moviesRepository.getTrailers(movie.getId(), new OnGetTrailersCallback() {
+            @Override
+            public void onSuccess(List<Trailer> trailers) {
+                trailersLabel.setVisibility(View.VISIBLE);
+                movieTrailers.removeAllViews();
+                for (final Trailer trailer : trailers) {
+                    View parent = getLayoutInflater().inflate(R.layout.thumbnail_trailer, movieTrailers, false);
+                    ImageView thumbnail = parent.findViewById(R.id.thumbnail);
+                    thumbnail.requestLayout();
+                    thumbnail.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            showTrailer(String.format(YOUTUBE_VIDEO_URL, trailer.getKey()));
+                        }
+                    });
+                    Glide.with(MovieActivity.this)
+                            .load(String.format(YOUTUBE_THUMBNAIL_URL, trailer.getKey()))
+                            .apply(RequestOptions.placeholderOf(R.color.colorPrimary).centerCrop())
+                            .into(thumbnail);
+                    movieTrailers.addView(parent);
+                }
+            }
+
+            @Override
+            public void onError() {
+                // Do nothing
+                trailersLabel.setVisibility(View.GONE);
+            }
+        });
+    }
+
+    private void showTrailer(String url) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        startActivity(intent);
     }
 
     private void getGenres(final Movie movie) {
